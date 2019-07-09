@@ -27,8 +27,8 @@ def face_detection(image, model="TF", threshold=0.5,file_dir="./models/"):
     image = cv2.imread(image) if isinstance(image, str) else image
     DNN = "CAFFE"
     if DNN == "CAFFE":
-        modelFile = "res10_300x300_ssd_iter_140000_fp16.caffemodel"
-        configFile = "models/deploy.prototxt"
+        modelFile = "models/SFD.caffemodel"
+        configFile = "models/SFD_.prototxt"
         net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
     else:
         modelFile = "models/opencv_face_detector_uint8.pb"
@@ -47,13 +47,15 @@ if __name__ == "__main__" :
     if DNN == "CAFFE":
         modelFile = "models/res10_300x300_ssd_iter_140000_fp16.caffemodel"
         configFile = "models/deploy.prototxt"
+        modelFile = "models/SFD.caffemodel"
+        configFile = "models/SFD_.prototxt"
         net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
     else:
         modelFile = "models/opencv_face_detector_uint8.pb"
         configFile = "models/opencv_face_detector.pbtxt"
         net = cv2.dnn.readNetFromTensorflow(modelFile, configFile)
 
-    outOpencvDnn, bboxes = detecter(net,image, threshold=0.5)
+    outOpencvDnn, bboxes = detecter(net, image, threshold=0.5)
     #outOpencvDnn = put_laugh_man(outOpencvDnn, bboxes)
     outOpencvDnn = mosaic_area(outOpencvDnn, bboxes)
     cv2.imshow("Face Detection Comparison", outOpencvDnn)
