@@ -53,8 +53,8 @@ if __name__ == "__main__" :
         net = cv2.dnn.readNetFromTensorflow(modelFile, configFile)
 
     outOpencvDnn, bboxes = detecter(net, image, threshold=0.5)
-    #outOpencvDnn = put_laugh_man(outOpencvDnn, bboxes)
-    outOpencvDnn = mosaic_area(outOpencvDnn, bboxes)
+    outOpencvDnn = put_laugh_man(outOpencvDnn, bboxes)
+    ##outOpencvDnn = mosaic_area(outOpencvDnn, bboxes)
     cv2.imshow("Face Detection Comparison", outOpencvDnn)
     print(time.time() - t)
     cv2.waitKey(0)
