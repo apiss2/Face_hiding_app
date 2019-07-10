@@ -1,4 +1,4 @@
-# すべてをignore
+﻿# すべてをignore
 *
 # すべてのディレクトリをホワイトリストに追加する
 !*/
@@ -9,3 +9,5 @@
 !*.css
 
 !*face.png
+!*.caffemodel
+!*.prototxt
