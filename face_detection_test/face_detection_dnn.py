@@ -40,15 +40,12 @@ def face_detection(image, model="TF", threshold=0.5,file_dir="./models/"):
     return image
 
 if __name__ == "__main__" :
-
     t = time.time()
-    image = cv2.imread("./image/190707_0003.jpg")
+    image = cv2.imread("./image/sample.jpg")
     DNN = "CAFFE"
     if DNN == "CAFFE":
-        modelFile = "models/res10_300x300_ssd_iter_140000_fp16.caffemodel"
-        configFile = "models/deploy.prototxt"
         modelFile = "models/SFD.caffemodel"
-        configFile = "models/SFD_.prototxt"
+        configFile = "models/SFD.prototxt"
         net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
     else:
         modelFile = "models/opencv_face_detector_uint8.pb"

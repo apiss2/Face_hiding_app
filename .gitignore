@@ -9,5 +9,6 @@
 !*.css
 
 !*face.png
+!*sample.jpg
 !*.caffemodel
 !*.prototxt
