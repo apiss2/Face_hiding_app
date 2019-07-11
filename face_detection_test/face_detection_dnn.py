@@ -1,8 +1,8 @@
 from __future__ import division
 import cv2
 import time
-import sys
-from hiding_tool import put_laugh_man, mosaic_area
+from hiding_tool import put_image, mosaic_area
+from os.path import join, dirname, abspath, normpath
 
 def detecter(net, frame, threshold):
     frameOpencvDnn = frame.copy()
@@ -21,41 +21,23 @@ def detecter(net, frame, threshold):
             x2 = int(detections[0, 0, i, 5] * frameWidth)
             y2 = int(detections[0, 0, i, 6] * frameHeight)
             bboxes.append([x1, y1, x2, y2])
-    return frameOpencvDnn, bboxes
+    return bboxes
 
-def face_detection(image, model="TF", threshold=0.5,file_dir="./models/"):
-    image = cv2.imread(image) if isinstance(image, str) else image
-    DNN = "CAFFE"
-    if DNN == "CAFFE":
-        modelFile = "models/SFD.caffemodel"
-        configFile = "models/SFD_.prototxt"
-        net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
-    else:
-        modelFile = "models/opencv_face_detector_uint8.pb"
-        configFile = "models/opencv_face_detector.pbtxt"
-        net = cv2.dnn.readNetFromTensorflow(modelFile, configFile)
-
-    outOpencvDnn, bboxes = detecter(net,image, threshold=threshold)
-
-    return image
+def face_detection(image, threshold=0.5):
+    img = cv2.imread(image) if isinstance(image, str) else image.copy()
+    configFile = normpath(join(dirname(abspath(__name__)),"models/SFD_.prototxt"))
+    modelFile = normpath(join(dirname(abspath(__name__)),"models/SFD.caffemodel"))
+    net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
+    bboxes = detecter(net, img, threshold=threshold)
+    return bboxes
 
 if __name__ == "__main__" :
     t = time.time()
     image = cv2.imread("./image/sample.jpg")
-    DNN = "CAFFE"
-    if DNN == "CAFFE":
-        modelFile = "models/SFD.caffemodel"
-        configFile = "models/SFD.prototxt"
-        net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
-    else:
-        modelFile = "models/opencv_face_detector_uint8.pb"
-        configFile = "models/opencv_face_detector.pbtxt"
-        net = cv2.dnn.readNetFromTensorflow(modelFile, configFile)
-
-    outOpencvDnn, bboxes = detecter(net, image, threshold=0.5)
-    outOpencvDnn = put_laugh_man(outOpencvDnn, bboxes)
-    ##outOpencvDnn = mosaic_area(outOpencvDnn, bboxes)
-    cv2.imshow("Face Detection Comparison", outOpencvDnn)
+    bboxes = face_detection(image, threshold=0.5)
+    out_image = put_image(image, bboxes)
+    #out_image = mosaic_area(image, bboxes)
+    cv2.imshow("Face Detection Comparison", out_image)
     print(time.time() - t)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

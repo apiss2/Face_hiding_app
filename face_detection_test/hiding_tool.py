@@ -24,7 +24,7 @@ def paste_transparent_image(roi, t_img):
     img2_fg = cv2.bitwise_and(t_img,t_img, mask=mask)
     return cv2.add(img1_bg,img2_fg)
 
-def put_laugh_man(image, bboxes):
+def put_image(image, bboxes):
     img = image.copy()
     max_size = img.shape[0] if img.shape[0]>img.shape[1] else img.shape[1]
     LM = cv2.imread("./image/face.png")
