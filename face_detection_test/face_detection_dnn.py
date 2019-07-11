@@ -7,10 +7,11 @@ from os.path import join, dirname, abspath, normpath, exists
 import datetime
 from pathlib import Path
 
-mode_dict = {0:("put","face"), 1:("put","no_photo"), 2:("put","default_icon"),
-            3:("msc",0.1), 4:("msc",0.05), 5:("msc",0.2)}
+
 
 def image_converter(image_path, threshold, convert_mode):
+    mode_dict = {0:("put","face"), 1:("put","no_photo"), 2:("put","default_icon"),
+                3:("msc",0.1), 4:("msc",0.05), 5:("msc",0.2)}
     if type(image_path) is str and type(convert_mode) is int: #入力の型チェック
         #path関係
         now_dir = Path(__file__).parent

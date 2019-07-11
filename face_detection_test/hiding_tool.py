@@ -43,6 +43,8 @@ def put_image(image, bboxes, icon):
             resised_LM = cv2.resize(LM, None, fx=ratio, fy=ratio, interpolation=cv2.INTER_NEAREST)
             h, w, _ = resised_LM.shape
             roi = img[bbox[1]:bbox[1]+h, bbox[0]:bbox[0]+w].copy()
-            roi = paste_transparent_image(roi, resised_LM)
-            img[bbox[1]:bbox[1]+h, bbox[0]:bbox[0]+w] = roi
+            #bug
+            new_roi = paste_transparent_image(roi, resised_LM)
+            h, w, _ = new_roi.shape
+            img[bbox[1]:bbox[1]+h, bbox[0]:bbox[0]+w] = new_roi
     return img
