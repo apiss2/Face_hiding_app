@@ -27,7 +27,7 @@ def paste_transparent_image(roi, t_img):
 
     img1_bg = cv2.bitwise_and(roi,roi, mask=mask_inv)
     img2_fg = cv2.bitwise_and(t_img,t_img, mask=mask)
-    return cv2.add(img1_bg,img2_fg)
+    return cv2.add(img1_bg, img2_fg)
 
 def put_image(image, bboxes, icon):
     img = image.copy()

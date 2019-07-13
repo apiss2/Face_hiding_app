@@ -10,7 +10,7 @@ from pathlib import Path
 def image_converter(image_path, threshold, convert_mode):
     result={"status": "erorr", "path": None, "error_message": None}
     mode_dict = {0:("put","face"), 1:("put","no_photo"), 2:("put","default_icon"),
-                3:("msc",0.1), 4:("msc",0.05), 5:("msc",0.2)}
+                3:("msc",0.1), 4:("msc",0.05), 5:("msc",0.01)}
 
     try:
         if not (type(image_path) is str and type(threshold) is int and type(convert_mode) is int): #入力の型チェック
@@ -62,7 +62,7 @@ def image_converter(image_path, threshold, convert_mode):
         try:
             cv2.imwrite(saved_image_path, out_image)
             result["status"] = "success"
-            result["path"] = saved_image_path
+            result["path"] = abspath(saved_image_path)
             return result
         except:
             result["error_message"] = "Failed to save image"
@@ -100,9 +100,8 @@ def face_detection(path, threshold=0.5):
     return bboxes
 
 if __name__ == "__main__" :
-
     a = image_converter("./image/sample.jpg",
-                    threshold=1, convert_mode=1)
+                    threshold=1, convert_mode=3)
     print(a)
     """
     t = time.time()
