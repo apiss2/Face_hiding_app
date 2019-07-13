@@ -17,13 +17,13 @@ def mosaic_area(src, bboxes, ratio=0.08):
     return dst
 
 def paste_transparent_image(roi, t_img):
+    if roi.shape != t_img.shape:
+        roi_h, roi_w, _ = roi.shape
+        t_img = t_img[:roi_h,:roi_w]
+
     img2gray = cv2.cvtColor(t_img,cv2.COLOR_BGR2GRAY)
     _, mask = cv2.threshold(img2gray, 10, 255, cv2.THRESH_BINARY)
     mask_inv = cv2.bitwise_not(mask)
-    #bug
-    #同じサイズの画像が来ない場合がある
-    print(roi.shape, t_img.shape)
-    print(mask_inv.shape, mask.shape)
 
     img1_bg = cv2.bitwise_and(roi,roi, mask=mask_inv)
     img2_fg = cv2.bitwise_and(t_img,t_img, mask=mask)
@@ -31,6 +31,7 @@ def paste_transparent_image(roi, t_img):
 
 def put_image(image, bboxes, icon):
     img = image.copy()
+    raw_h, raw_w, _ = img.shape
     max_size = img.shape[0] if img.shape[0]>img.shape[1] else img.shape[1]
     LM = cv2.imread(icon)
     LM_size = LM.shape[1]
@@ -39,12 +40,18 @@ def put_image(image, bboxes, icon):
         if size>max_size:
             pass
         else:
-            ratio = size/LM_size*1.05
+            ratio = size/LM_size*1.15
             resised_LM = cv2.resize(LM, None, fx=ratio, fy=ratio, interpolation=cv2.INTER_NEAREST)
             h, w, _ = resised_LM.shape
-            roi = img[bbox[1]:bbox[1]+h, bbox[0]:bbox[0]+w].copy()
+
+            h1 = 0 if int(bbox[1])<0 else int(bbox[1])
+            h2 = raw_h if int(bbox[1]+h)>raw_h else int(bbox[1]+h)
+            w1 = 0 if int(bbox[0])<0 else int(bbox[0])
+            w2 = raw_w if int(bbox[0]+w)>raw_w else int(bbox[0]+w)
+
+            roi = img[h1:h2, w1:w2].copy()
             #bug
             new_roi = paste_transparent_image(roi, resised_LM)
             h, w, _ = new_roi.shape
-            img[bbox[1]:bbox[1]+h, bbox[0]:bbox[0]+w] = new_roi
+            img[h1:h2, w1:w2] = new_roi
     return img

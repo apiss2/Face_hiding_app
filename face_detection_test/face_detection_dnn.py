@@ -7,12 +7,16 @@ from os.path import join, dirname, abspath, normpath, exists
 import datetime
 from pathlib import Path
 
-
-
 def image_converter(image_path, threshold, convert_mode):
+    result={"status": "erorr", "path": None, "error_message": None}
     mode_dict = {0:("put","face"), 1:("put","no_photo"), 2:("put","default_icon"),
                 3:("msc",0.1), 4:("msc",0.05), 5:("msc",0.2)}
-    if type(image_path) is str and type(convert_mode) is int: #入力の型チェック
+
+    try:
+        if not (type(image_path) is str and type(threshold) is int　and type(convert_mode) is int): #入力の型チェック
+            result["error_message"]="Unexpected inputs"
+            return result
+
         #path関係
         now_dir = Path(__file__).parent
         image_dir = join(now_dir,"image")
@@ -21,30 +25,51 @@ def image_converter(image_path, threshold, convert_mode):
 
         #顔検出
         image = cv2.imread(image_path)
+        if image is None:
+            result["error_message"]="No such file or directory"
+            return result
+
         try:
-            bboxes = face_detection(image_path, threshold=threshold)
+            bboxes = face_detection(image_path, threshold=((threshold+1)*0.05))
         except:
-            return [1, "DNN erroer."]
+            result["error_message"] = "DNN error"
+            return result
 
         #処理方法選択
         mode, detail = mode_dict[convert_mode]
         if mode == "put":
             icon = join(image_dir, detail+".png")
-            out_image = put_image(image, bboxes, icon)
+            try:
+                image = mosaic_area(image, bboxes, ratio=0.08)
+                out_image = put_image(image, bboxes, icon)
+            except:
+                result["error_message"] = "Failed to combine images"
+                return result
         elif mode == "msc":
-            out_image = mosaic_area(image, bboxes, ratio=detail)
+            try:
+                out_image = mosaic_area(image, bboxes, ratio=detail)
+            except:
+                result["error_message"] = "Failed to combine images"
+                return result
         else:
-            print("error")
-            return [0, "Unexpected hiding mode."]
+            result["error_message"] = "Unexpected inputs (convert_mode)"
+            return result
 
-        #画像の保存
-        now = datetime.datetime.now()
-        filename = 'img_{0:%M%S%f}.jpg'.format(now)
+        #画像名作成
+        filename = 'img_{0:%M%S%f}.jpg'.format(datetime.datetime.now())
         saved_image_path = join(save_dir,filename)
-        cv2.imwrite(saved_image_path, out_image)
-        return saved_image_path
-    else:
-        return [0, "Unexpected input."]
+        #画像の保存
+        try:
+            cv2.imwrite(saved_image_path, out_image)
+            result["status"] = "success"
+            result["path"] = saved_image_path
+            return result
+        except:
+            result["error_message"] = "Failed to save image"
+            return result
+    except:
+        result["error_message"] = "Unknown error"
+        return result
 
 def detecter(net, frame, threshold):
     frameOpencvDnn = frame.copy()
