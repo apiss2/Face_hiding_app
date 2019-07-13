@@ -13,7 +13,7 @@ def image_converter(image_path, threshold, convert_mode):
                 3:("msc",0.1), 4:("msc",0.05), 5:("msc",0.2)}
 
     try:
-        if not (type(image_path) is str and type(threshold) is int　and type(convert_mode) is int): #入力の型チェック
+        if not (type(image_path) is str and type(threshold) is int and type(convert_mode) is int): #入力の型チェック
             result["error_message"]="Unexpected inputs"
             return result
 
@@ -30,7 +30,7 @@ def image_converter(image_path, threshold, convert_mode):
             return result
 
         try:
-            bboxes = face_detection(image_path, threshold=((threshold+1)*0.05))
+            bboxes = face_detection(image_path, threshold=(((10-threshold)+1)*0.05))
         except:
             result["error_message"] = "DNN error"
             return result
@@ -100,9 +100,9 @@ def face_detection(path, threshold=0.5):
     return bboxes
 
 if __name__ == "__main__" :
-    """
-    a = image_converter("C:/Users/RIKI/Documents/PythonScripts/Face_hiding_app/face_detection_test/image/sample.jpg",
-                    threshold=0.5, convert_mode=1)
+
+    a = image_converter("./image/sample.jpg",
+                    threshold=1, convert_mode=1)
     print(a)
     """
     t = time.time()
@@ -114,3 +114,4 @@ if __name__ == "__main__" :
     print(time.time() - t)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    """
