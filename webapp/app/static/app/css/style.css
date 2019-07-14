@@ -1,0 +1,18 @@
+body {
+    color:blue;
+    font-size:20pt;
+}
+
+h1 {
+    color:red;
+    font-size:32pt;
+}
+
+p {
+    color:green;
+    margin:10px;
+}
+
+a {
+    color:yellow;
+}

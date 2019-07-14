@@ -1,19 +1,10 @@
-﻿# すべてをignore
-*
-# すべてのディレクトリをホワイトリストに追加する
-!*/
-# ホワイトリスト
-!.gitignore
-!*.py
-!*.html
-!*.css
+﻿*.png
+*.jpg
+*.gif
+*.bmp
 
-#画像関連
+
 !*face.png
 !*no_photo.png
 !*default_icon.png
 !*sample.jpg
-
-#モデル関連
-!*.caffemodel
-!*.prototxt
