@@ -1,12 +1,12 @@
 # Django自分用メモ
 ゆるゆるやっていき
 
-# プロジェクトの作成
+## プロジェクトの作成
 よくわからんが `django-admin startproject <projectname>` でできる。
 次に `python manage.py migrate` でデータベースを作成。
 小規模ならsqliteでよさそうだし、どうせ作っても小規模なのでsqlite以外は無視する方針でいく。
 
-# アプリ追加の概要
+## アプリ追加の概要
 Qiitaにあったものをそのままメモしていく。
 
 1. `python manage.py startapp <appname>` でアプリケーションを追加
@@ -25,7 +25,7 @@ Qiitaにあったものをそのままメモしていく。
 - 日本語化
     `<projectname>/settings.py` の `LANGUAGE_CODE` を `ja` に変更
 
-# modelsについて
+## modelsについて
 このクラスはDBのテーブルを表す。
 例えば`models.~Field`はカラムを表現しており、`CharField`には文字列、`IntegerField`には整数が記録される。
 
@@ -36,7 +36,7 @@ Django2.0からon_deleteを指定するのが必須になった。
 外部キーで子になっているフィールドを削除する際に、親も削除するのかを設定する。
 よくわからんから`DO_NOTHING`とか入れておくと動く(適当)
 
-# url.py のルーティングについて
+## url.py のルーティングについて
 まずは `<projectname>/urls.py` 内のurlpatternが呼び出される。
 - include関数
     include関数は参照先の`url.py`の内容を呼んでいる。

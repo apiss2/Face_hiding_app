@@ -1,36 +1,31 @@
 from __future__ import division
 import cv2
 import time
-from hiding_tool import put_image, mosaic_area
+from .hiding_tool import put_image, mosaic_area
 import os
 from os.path import join, dirname, abspath, normpath, exists
-import datetime
 from pathlib import Path
+from django.conf import settings
 
-def image_converter(image_path, threshold, convert_mode):
-    result={"status": "erorr", "path": None, "error_message": None}
+def image_converter(input_path, output_path, threshold, convert_mode):
+    result={"status": "erorr", "error_message": None}
     mode_dict = {0:("put","face"), 1:("put","no_photo"), 2:("put","default_icon"),
                 3:("msc",0.1), 4:("msc",0.05), 5:("msc",0.01)}
 
     try:
-        if not (type(image_path) is str and type(threshold) is int and type(convert_mode) is int): #入力の型チェック
+        if not (type(input_path) is str and type(output_path) is str \
+                and type(threshold) is int and type(convert_mode) is int): #入力の型チェック
             result["error_message"]="Unexpected inputs"
             return result
 
-        #path関係
-        now_dir = Path(__file__).parent
-        image_dir = join(now_dir,"image")
-        save_dir = join(now_dir,"output_image")
-        os.makedirs(save_dir, exist_ok=True)
-
         #顔検出
-        image = cv2.imread(image_path)
+        image = cv2.imread(input_path)
         if image is None:
-            result["error_message"]="No such file or directory"
+            result["error_message"]="No such image file or directory"
             return result
 
         try:
-            bboxes = face_detection(image_path, threshold=(((10-threshold)+1)*0.05))
+            bboxes = face_detection(image, threshold=((11-threshold)*0.05))
         except:
             result["error_message"] = "DNN error"
             return result
@@ -38,10 +33,10 @@ def image_converter(image_path, threshold, convert_mode):
         #処理方法選択
         mode, detail = mode_dict[convert_mode]
         if mode == "put":
-            icon = join(image_dir, detail+".png")
+            icon_path = settings.BASE_DIR + f"/media/icons/{detail}.png"
             try:
                 image = mosaic_area(image, bboxes, ratio=0.08)
-                out_image = put_image(image, bboxes, icon)
+                out_image = put_image(image, bboxes, icon_path)
             except:
                 result["error_message"] = "Failed to combine images"
                 return result
@@ -55,14 +50,10 @@ def image_converter(image_path, threshold, convert_mode):
             result["error_message"] = "Unexpected inputs (convert_mode)"
             return result
 
-        #画像名作成
-        filename = 'img_{0:%M%S%f}.jpg'.format(datetime.datetime.now())
-        saved_image_path = join(save_dir,filename)
         #画像の保存
         try:
-            cv2.imwrite(saved_image_path, out_image)
+            cv2.imwrite(output_path, out_image)
             result["status"] = "success"
-            result["path"] = abspath(saved_image_path)
             return result
         except:
             result["error_message"] = "Failed to save image"
@@ -90,8 +81,7 @@ def detecter(net, frame, threshold):
             bboxes.append([x1, y1, x2, y2])
     return bboxes
 
-def face_detection(path, threshold=0.5):
-    img = cv2.imread(path)
+def face_detection(img, threshold=0.5):
     now_dir = Path(__file__).parent
     configFile = join(now_dir, "models/SFD.prototxt")
     modelFile = join(now_dir, "models/SFD.caffemodel")
