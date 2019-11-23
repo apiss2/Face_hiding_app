@@ -1,6 +1,8 @@
 # Face_hiding_app
 Twitterに投稿する写真中の顔を検出して、自動で隠すアプリを作成中。
 
+**別のリポジトリに以降したので使ってない。以降はそちらを参照すること**
+
 ## Dependencies
 * Python 3.6
 * openCV 4.1
